@@ -9,33 +9,43 @@ export default function MPLScreen({
   onBlockComplete,
   saving,
 }) {
-  // choices: { [trial_id]: "A" | "B" }
   const [choices, setChoices] = useState({});
-  // blockStartTime: timestamp when this block was first displayed
   const [rowStartTimes, setRowStartTimes] = useState({});
   const [blockMountTime] = useState(() => Date.now());
 
   const probability = blockTrials[0]?.probability;
+  const probPct = probability != null ? Math.round(probability * 100) : "";
 
-  // Record start time for each row on first render
   useEffect(() => {
     const now = Date.now();
     const times = {};
-    blockTrials.forEach((t) => {
-      times[t.trial_id] = now;
-    });
+    blockTrials.forEach((t) => { times[t.trial_id] = now; });
     setRowStartTimes(times);
     setChoices({});
   }, [blockTrials]);
 
-  function handleChoice(trialId, choice) {
-    if (!rowStartTimes[trialId]) {
-      setRowStartTimes((prev) => ({ ...prev, [trialId]: Date.now() }));
-    }
-    setChoices((prev) => ({ ...prev, [trialId]: choice }));
+  /** Input assistance: enforce monotone choices */
+  function handleChoice(clickedId, choice) {
+    const idx = blockTrials.findIndex((t) => t.trial_id === clickedId);
+    setChoices((prev) => {
+      const next = { ...prev, [clickedId]: choice };
+      if (choice === "B") {
+        // all rows BELOW also → B (higher safe amount → prefer safe)
+        for (let i = idx + 1; i < blockTrials.length; i++)
+          next[blockTrials[i].trial_id] = "B";
+      } else {
+        // choice A: all rows ABOVE also → A (lower safe amount → prefer risky)
+        for (let i = 0; i < idx; i++)
+          next[blockTrials[i].trial_id] = "A";
+      }
+      return next;
+    });
+    if (!rowStartTimes[clickedId])
+      setRowStartTimes((prev) => ({ ...prev, [clickedId]: Date.now() }));
   }
 
   const allAnswered = blockTrials.every((t) => choices[t.trial_id]);
+  const answered = Object.keys(choices).length;
 
   function handleNext() {
     if (!allAnswered) return;
@@ -51,102 +61,66 @@ export default function MPLScreen({
     onBlockComplete(results);
   }
 
-  const completed = Object.keys(choices).length;
-  const total = blockTrials.length;
-
   return (
     <div className="screen">
       {condition === "HIGH" && (
         <div className="digit-banner">
-          <p className="label">覚える数字</p>
-          <p className="digit-string">{digitString}</p>
+          <span className="label">覚える数字：</span>
+          <span className="digit-string">{digitString}</span>
         </div>
       )}
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <p style={{ fontWeight: 700, color: "#3a86ff", fontSize: "0.9rem" }}>
-          ブロック {blockIndex + 1} / {totalBlocks}
-        </p>
-        <p className="block-progress">
-          {completed} / {total} 行回答済み
-        </p>
-      </div>
-
-      <div className="progress-bar-wrapper">
-        <div className="progress-track">
-          <div
-            className="progress-fill"
-            style={{ width: `${(completed / total) * 100}%` }}
-          />
+      <div style={{ padding: "0 16px 24px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <h2 style={{ margin: 0 }}>ブロック {blockIndex + 1} / {totalBlocks}</h2>
+          <span style={{ fontSize: "0.85rem", color: "#666" }}>
+            {answered} / {blockTrials.length} 行回答済み
+          </span>
         </div>
-      </div>
 
-      <p className="mpl-header">
-        確率 p = {probability} のとき、以下の選択をしてください
-      </p>
+        <div style={{ background: "#e8f4fd", borderRadius: 6, padding: "8px 12px", marginBottom: 10, fontSize: "0.88rem" }}>
+          <strong>選択肢A</strong>：確率 <strong>{probPct}%</strong> で 1,000円（外れ→0円）
+          ／ <strong>選択肢B</strong>：表の金額を確実に受け取る
+        </div>
 
-      <div className="card" style={{ padding: "0", overflow: "hidden" }}>
-        <div className="mpl-table-wrapper">
-          <table className="mpl-table">
+        <p style={{ fontSize: "0.78rem", color: "#888", margin: "0 0 8px" }}>
+          ヒント：AかBをクリックすると上下の行が自動補完されます。変更したい行は押し直せます。
+        </p>
+
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.86rem" }}>
             <thead>
-              <tr>
-                <th>行</th>
-                <th className="option-a-text">
-                  選択肢 A（くじ）
-                  <br />
-                  <span style={{ fontWeight: 400, fontSize: "0.82rem" }}>
-                    確率 {probability} で ¥1,000
-                  </span>
-                </th>
-                <th className="option-b-text">
-                  選択肢 B（確実）
-                  <br />
-                  <span style={{ fontWeight: 400, fontSize: "0.82rem" }}>
-                    確実に受け取れる金額
-                  </span>
-                </th>
-                <th>A を選ぶ</th>
-                <th>B を選ぶ</th>
+              <tr style={{ background: "#f0f0f0" }}>
+                <th style={th}>行</th>
+                <th style={th}>選択肢B（確実額）</th>
+                <th style={{ ...th, color: "#1565c0" }}>A を選ぶ</th>
+                <th style={{ ...th, color: "#2e7d32" }}>B を選ぶ</th>
               </tr>
             </thead>
             <tbody>
-              {blockTrials.map((trial) => {
-                const chosen = choices[trial.trial_id];
+              {blockTrials.map((trial, idx) => {
+                const c = choices[trial.trial_id];
                 return (
                   <tr
                     key={trial.trial_id}
-                    className={chosen ? `selected-${chosen}` : ""}
+                    style={{
+                      background: c === "A" ? "#e3f2fd" : c === "B" ? "#e8f5e9" : idx % 2 === 0 ? "#fff" : "#fafafa",
+                      borderBottom: "1px solid #e0e0e0",
+                    }}
                   >
-                    <td style={{ color: "#888", fontSize: "0.85rem" }}>
-                      {trial.row}
+                    <td style={td}>{idx + 1}</td>
+                    <td style={{ ...td, fontWeight: 600 }}>¥{trial.option_b_amount.toLocaleString()}</td>
+                    <td style={td}>
+                      <button
+                        onClick={() => handleChoice(trial.trial_id, "A")}
+                        style={{ ...btn, background: c === "A" ? "#1565c0" : "#e3f2fd", color: c === "A" ? "#fff" : "#1565c0", border: "1px solid #1565c0" }}
+                      >A</button>
                     </td>
-                    <td className="option-a-text">
-                      {probability} × ¥1,000
-                    </td>
-                    <td className="option-b-text">¥{trial.option_b_amount}</td>
-                    <td>
-                      <label className="radio-label">
-                        <input
-                          type="radio"
-                          name={trial.trial_id}
-                          value="A"
-                          checked={chosen === "A"}
-                          onChange={() => handleChoice(trial.trial_id, "A")}
-                        />
-                        A
-                      </label>
-                    </td>
-                    <td>
-                      <label className="radio-label">
-                        <input
-                          type="radio"
-                          name={trial.trial_id}
-                          value="B"
-                          checked={chosen === "B"}
-                          onChange={() => handleChoice(trial.trial_id, "B")}
-                        />
-                        B
-                      </label>
+                    <td style={td}>
+                      <button
+                        onClick={() => handleChoice(trial.trial_id, "B")}
+                        style={{ ...btn, background: c === "B" ? "#2e7d32" : "#e8f5e9", color: c === "B" ? "#fff" : "#2e7d32", border: "1px solid #2e7d32" }}
+                      >B</button>
                     </td>
                   </tr>
                 );
@@ -154,23 +128,20 @@ export default function MPLScreen({
             </tbody>
           </table>
         </div>
+
+        <button
+          className="btn-primary btn-full"
+          style={{ marginTop: 16 }}
+          disabled={!allAnswered || saving}
+          onClick={handleNext}
+        >
+          {saving ? "保存中..." : "次のブロックへ →"}
+        </button>
       </div>
-
-      {!allAnswered && (
-        <p className="warning" style={{ fontSize: "0.85rem" }}>
-          すべての行に回答してから「次へ」を押してください
-        </p>
-      )}
-
-      {saving && <p className="saving">保存中...</p>}
-
-      <button
-        className="btn-primary btn-full"
-        onClick={handleNext}
-        disabled={!allAnswered || saving}
-      >
-        次へ
-      </button>
     </div>
   );
 }
+
+const th = { padding: "8px 10px", textAlign: "center", borderBottom: "2px solid #ccc", whiteSpace: "nowrap" };
+const td = { padding: "4px 10px", textAlign: "center" };
+const btn = { padding: "3px 14px", borderRadius: 4, cursor: "pointer", fontWeight: 700, fontSize: "0.88rem" };

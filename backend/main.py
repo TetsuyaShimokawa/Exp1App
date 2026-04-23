@@ -12,7 +12,7 @@ from fastapi.responses import StreamingResponse
 
 from models.session import SessionStartRequest
 from models.result import ChoiceResult
-from trial_generator import generate_all_trials
+from trial_generator import generate_all_trials, generate_digit_strings, make_digit_string
 
 app = FastAPI(title="Exp1App API — Cognitive Load × MPL RCT")
 
@@ -63,14 +63,17 @@ def start_session(req: SessionStartRequest):
 
     session_id = str(uuid.uuid4())
     condition = random.choice(CONDITIONS)
-    digit_string = generate_digit_string(7) if condition == "HIGH" else ""
     trials = generate_all_trials()
+
+    # Compute number of blocks from trials
+    n_blocks = max(t["block"] for t in trials)
+    digit_strings = generate_digit_strings(n_blocks) if condition == "HIGH" else [""] * n_blocks
 
     sessions[session_id] = {
         "participant_id": req.participant_id.strip(),
         "name": req.name.strip(),
         "condition": condition,
-        "digit_string": digit_string,
+        "digit_strings": digit_strings,
         "trials": trials,
         "created_at": datetime.now().isoformat(),
     }
@@ -78,7 +81,7 @@ def start_session(req: SessionStartRequest):
     return {
         "session_id": session_id,
         "condition": condition,
-        "digit_string": digit_string,
+        "digit_strings": digit_strings,
         "trials": trials,
     }
 
