@@ -1,10 +1,14 @@
 import random
 import string
 
-PROB_LEVELS = [0.05, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95]
+PROB_LEVELS = [
+    0.01, 0.02, 0.03, 0.05, 0.07, 0.10, 0.15, 0.20, 0.25, 0.30,
+    0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80,
+    0.85, 0.90, 0.92, 0.93, 0.95, 0.97, 0.98, 0.99,
+]
 
-# 40 safe amounts: ¥25 to ¥1000 in steps of ¥25
-SAFE_AMOUNTS = [25 * i for i in range(1, 41)]
+# 20 safe amounts: ¥50 to ¥1000 in steps of ¥50
+SAFE_AMOUNTS = [50 * i for i in range(1, 21)]
 
 DIGIT_CHANGE_EVERY = 3  # new 7-digit string every N blocks
 
