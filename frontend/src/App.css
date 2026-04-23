@@ -1,0 +1,361 @@
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+  background: #f5f7fa;
+  color: #1a1a2e;
+  min-height: 100vh;
+}
+
+/* ===== Screen wrapper ===== */
+.screen {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ===== Digit banner (HIGH load) ===== */
+.digit-banner {
+  background: #fff3f3;
+  border: 2px solid #e63946;
+  border-radius: 12px;
+  padding: 14px 20px;
+  text-align: center;
+}
+
+.digit-banner .label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e63946;
+  margin-bottom: 4px;
+}
+
+.digit-banner .digit-string {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #c0392b;
+}
+
+.digit-box-prominent {
+  background: #fff0f0;
+  border: 3px solid #e63946;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+}
+
+.digit-box-prominent .label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #e63946;
+  margin-bottom: 8px;
+}
+
+.digit-box-prominent .digit-display {
+  font-size: 2.8rem;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  color: #c0392b;
+}
+
+/* ===== Card ===== */
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+/* ===== Input form ===== */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.field input[type="text"],
+.field input[type="number"] {
+  padding: 12px 14px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  background: #fff;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: #3a86ff;
+  box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.15);
+}
+
+/* ===== Buttons ===== */
+.btn-primary {
+  padding: 13px 28px;
+  background: #3a86ff;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  align-self: flex-start;
+}
+
+.btn-primary:hover:not(:disabled) { background: #2563eb; }
+.btn-primary:active:not(:disabled) { transform: scale(0.97); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-full {
+  width: 100%;
+  align-self: stretch;
+}
+
+/* ===== Error / Warning ===== */
+.error {
+  color: #dc2626;
+  font-size: 0.88rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.warning {
+  color: #b45309;
+  font-size: 0.88rem;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+/* ===== Setup screen ===== */
+.setup-screen {
+  justify-content: center;
+}
+
+.setup-screen h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.setup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: #fff;
+  padding: 28px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+/* ===== Instruction screen ===== */
+.instruction-list {
+  padding-left: 1.4em;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* ===== MPL table ===== */
+.mpl-header {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  text-align: center;
+}
+
+.mpl-table-wrapper {
+  overflow-x: auto;
+}
+
+.mpl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.mpl-table th {
+  background: #f0f4ff;
+  color: #334;
+  font-weight: 700;
+  padding: 10px 12px;
+  text-align: center;
+  border-bottom: 2px solid #d0d9ff;
+}
+
+.mpl-table td {
+  padding: 9px 12px;
+  text-align: center;
+  border-bottom: 1px solid #eef0f5;
+  vertical-align: middle;
+}
+
+.mpl-table tr:last-child td {
+  border-bottom: none;
+}
+
+.mpl-table tr:hover td {
+  background: #f8faff;
+}
+
+.mpl-table tr.selected-A td {
+  background: #eff8ff;
+}
+
+.mpl-table tr.selected-B td {
+  background: #fff8f0;
+}
+
+.option-a-text {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.option-b-text {
+  color: #e67e22;
+  font-weight: 600;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 0.88rem;
+}
+
+.radio-label input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #3a86ff;
+}
+
+/* ===== Block progress ===== */
+.block-progress {
+  font-size: 0.85rem;
+  color: #666;
+  text-align: right;
+}
+
+.progress-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.progress-track {
+  height: 6px;
+  background: #e0e4ed;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3a86ff, #8338ec);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+/* ===== Break / Finish screens ===== */
+.center-screen {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.center-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 44px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  max-width: 480px;
+  width: 100%;
+}
+
+.center-card h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+
+.center-card p {
+  color: #555;
+  line-height: 1.7;
+}
+
+.participant-id-display {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #3a86ff;
+  font-family: monospace;
+  background: #f0f4ff;
+  padding: 8px 20px;
+  border-radius: 8px;
+}
+
+/* ===== Digit check ===== */
+.digit-check-input {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-align: center;
+  padding: 14px;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  width: 100%;
+  background: #fff;
+  font-family: monospace;
+}
+
+.digit-check-input:focus {
+  outline: none;
+  border-color: #3a86ff;
+  box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.15);
+}
+
+.digit-check-input.error-input {
+  border-color: #e63946;
+  background: #fff3f3;
+}
+
+/* ===== Saving indicator ===== */
+.saving {
+  color: #888;
+  font-size: 0.88rem;
+  text-align: center;
+}
